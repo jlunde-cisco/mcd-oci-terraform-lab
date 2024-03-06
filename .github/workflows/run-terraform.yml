@@ -12,3 +12,56 @@ on:
         required: true
 
 permissions: write-all
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: production
+    env: 
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+      
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Initialize a new or existing Terraform working directory 
+    - name: Terraform Init
+      run: | 
+        cd ${{ github.event.inputs.module }}
+        terraform init 
+        
+    # Copy and delete terraform.tfstate files from s3 bucket
+    - name: Retrieve tfstate
+      run: |
+        cd ${{ github.event.inputs.module }}
+        aws s3 cp s3://tetlab-rancher-backups/${{ github.event.inputs.module }}-terraform.tfstate ./terraform.tfstate
+      continue-on-error: true
+
+    - name: Terraform Plan
+      id: plan 
+      run: | 
+        cd ${{ github.event.inputs.module }}
+        terraform plan -input=false
+      continue-on-error: false
+      
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+    
+    - name: Terraform Apply
+      run: | 
+        cd ${{ github.event.inputs.module }}
+        terraform apply -auto-approve -input=false
+      continue-on-error: false
+
+    # Copy tfstate file to s3 bucket
+    - name: Copy terraform.tfstate file to s3bucket
+      if: always()
+      run: |
+        cd ${{ github.event.inputs.module }}
+        aws s3 cp ./terraform.tfstate s3://tetlab-rancher-backups/${{ github.event.inputs.module }}-terraform.tfstate
