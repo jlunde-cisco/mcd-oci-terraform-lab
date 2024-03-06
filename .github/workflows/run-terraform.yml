@@ -1,0 +1,14 @@
+name: 'Terraform execute'
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        type: choice
+        description: "Applying or Destroying"
+        options: 
+          - apply
+          - destroy
+        required: true
+
+permissions: write-all
