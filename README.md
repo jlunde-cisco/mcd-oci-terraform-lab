@@ -16,7 +16,7 @@ There a a few pre-requisites and steps that must be followed in order to get thi
 	 - [ ] **key_files/priv_key.pem**  --> input the contents of your OCI API key, private key into here (downloaded when you create your OCI api key
 	 - [ ] **terraform.tfvars**
 	    - [ ] ***compartment_ocid*** --> (put your compartment ocid in here)
-            - [ ] *** SJC and PHX Availability zone names*** --> the genius's at Oracle decided to randomize AZ names per account, so make sure you glean these from the console and update here
+            - [ ] ***SJC and PHX Availability zone names*** --> the genius's at Oracle decided to randomize AZ names per account, so make sure you glean these from the console and update here
 	    - [ ] ***tenancy_id*** --> (From API key - the tenancy ID)
 	    - [ ] ***user_id*** --> (From API key - the user ID)
 	    - [ ] ***fingerprint*** --> (From API key - the fingerprint)
